@@ -30,16 +30,18 @@ jobs:
             [ -f "$f" ] && mv -f "$f" lib/services/ || true
           done
 
-      - name: Android Altyapisini Kur
+      - name: Android Altyapisi ve AdMob Konfigürasyonu
         run: |
           rm -rf android
           flutter create . --project-name hakpay --org com.hakpay --platforms=android
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>' $MANIFEST
 
       - name: APK Uret
         run: |
           flutter clean
           flutter pub get
-          flutter build apk --release
+          flutter build apk --release --no-tree-shake-icons
 
       - uses: actions/upload-artifact@v4
         with:
