@@ -21,7 +21,7 @@ jobs:
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>' $MANIFEST
 
-      - name: ZIP Icindeki Kodlari Otomatik Bul ve Yerlestir
+      - name: ZIP Icindeki Kodlari Otomatik Bul ve Uyumsuzluklari Duzelt
         run: |
           if [ -f HakPay_CLEAN_ADMOB.zip ]; then
             unzip -o HakPay_CLEAN_ADMOB.zip -d temp_zip
@@ -36,7 +36,10 @@ jobs:
             fi
             rm -rf temp_zip
           fi
-          [ -f pubspec.yaml ] && sed -i 's/3.10.0/3.0.0/g' pubspec.yaml || true
+          if [ -f pubspec.yaml ]; then
+            sed -i 's/3.10.0/3.0.0/g' pubspec.yaml || true
+            sed -i -E 's/flutter_lints:.*$/flutter_lints: ^4.0.0/' pubspec.yaml || true
+          fi
 
       - name: APK Uret
         run: |
