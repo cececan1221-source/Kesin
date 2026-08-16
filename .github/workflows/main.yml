@@ -2,8 +2,6 @@ name: HakPay APK Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main, master]
 
 jobs:
   build:
@@ -16,30 +14,15 @@ jobs:
           flutter-version: "3.24.3"
           cache: true
 
-      - name: Klasorleri Duzenle
-        run: |
-          mkdir -p lib/config lib/core lib/ui/widgets lib/repositories lib/services assets test
-          [ -f main.dart ] && mv -f main.dart lib/main.dart || true
-          [ -f home_screen.dart ] && mv -f home_screen.dart lib/ui/ || true
-          [ -f theme.dart ] && mv -f theme.dart lib/ui/ || true
-          [ -f splash_screen.dart ] && mv -f splash_screen.dart lib/ui/ || true
-          [ -f app_config.dart ] && mv -f app_config.dart lib/config/ || true
-          [ -f result.dart ] && mv -f result.dart lib/core/ || true
-          [ -f basic_test.dart ] && mv -f basic_test.dart test/ || true
-          for f in admob_service.dart wallet_service.dart ad_service.dart auth_service.dart; do
-            [ -f "$f" ] && mv -f "$f" lib/services/ || true
-          done
-
-      - name: Android Altyapisi ve AdMob Konfigürasyonu
+      - name: Android Yapılandırması
         run: |
           rm -rf android
           flutter create . --project-name hakpay --org com.hakpay --platforms=android
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>' $MANIFEST
 
-      - name: APK Uret
+      - name: APK Derle
         run: |
-          flutter clean
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
